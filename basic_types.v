@@ -86,7 +86,12 @@ Axiom fileplus_more_than_once :
 Inductive RankwiseDirection : Set := Inwards | Outwards.
 Inductive FilewiseDirection : Set := Pluswards | Minuswards.
 Definition DiagonalDirection : Set := RankwiseDirection * FilewiseDirection.
-Inductive Orientation : Set := RankwiseOrientation | FilewiseOrientation.
+Inductive StraightOrientation : Set := 
+    | RankwiseOrientation
+    | FilewiseOrientation.
+Inductive LinearOrientation : Set :=
+    | StraightOrientation'
+    | DiagonalOrientation.
 Inductive StraightDirection : Type :=
     | Rankwise (d:RankwiseDirection)
     | Filewise (d:FilewiseDirection).
@@ -94,3 +99,27 @@ Inductive LinearDirection : Set :=
     | Straight (d:StraightDirection)
     | Diagonal (d:DiagonalDirection).
 Definition LinearVec : Set := LinearDirection * Count.
+Definition direc (v:LinearVec) := match v with
+    | (d, _) => d
+end.
+Definition whatDirecLinearOrientation (d:LinearDirection) : LinearOrientation :=
+    match d with
+        | Straight _ => StraightOrientation'
+        | Diagonal _ => DiagonalOrientation
+    end.
+Definition whatDirecStraightOrientation (d:StraightDirection) : StraightOrientation :=
+    match d with
+        | Rankwise _ => RankwiseOrientation
+        | Filewise _ => FilewiseOrientation
+    end.
+Lemma isStraight (v:LinearVec) :
+    (whatDirecLinearOrientation (direc v)) = StraightOrientation' .
+Lemma isDiagonal (v:LinearVec) :
+    (whatDirecLinearOrientation (direc v)) = DiagonalOrientation .
+Lemma isRankwise (v:LinearVec) :
+    isStraight (direc v),
+    (whatDirecStraightOrientation (direc v)) = RankwiseOrientation.
+Lemma isFilewise (v:LinearVec) :
+    isStraight (direc v),
+    (whatDirecStraightOrientation (direc v)) = FilewiseOrientation.
+    
