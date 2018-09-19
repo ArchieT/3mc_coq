@@ -44,7 +44,42 @@ Axiom out_if_inw :
     forall a : Rank, forall b : Rank, 
     (a = (inw b)) -> ((Onboard b) = (out a)).
 Inductive SegmentHalf : Set := FirstHalf | SecondHalf.
-Definition SegmentEight : Set := (SegmentHalf, SegmentHalf, SegmentHalf)
-Definition ColorSegment : Set := Color
-Definition File : Set := (ColorSegment, SegmentEight)
+Definition SegmentEight : Set := SegmentHalf * SegmentHalf * SegmentHalf.
+Definition ColorSegment : Set := Color.
+Definition File : Set := ColorSegment * SegmentEight.
 (* Definition oneFilePluswards (f:File) : File := *)
+Inductive Count : Set := Once | OnceMore (than:Count).
+Inductive Natural : Set := Zero | Positive (c:Count).
+Variable filePlus : File -> Count -> File.
+Variable fileMinus : File -> Count -> File.
+Axiom fileminus_on_fileplus :
+    forall f : File,
+    forall c : Count,
+    (fileMinus (filePlus f c) c) = f.
+Axiom fileplus_on_fileminus :
+    forall f : File,
+    forall c : Count,
+    (filePlus (fileMinus f c) c) = f.
+Axiom fileplus_one_last_in_color :
+    forall c : Color,
+    (filePlus (c, (SecondHalf, SecondHalf, SecondHalf)) Once) = (next c, (FirstHalf, FirstHalf, FirstHalf)).
+Lemma fileminus_one_last_in_color :
+    forall c : Color,
+    (fileMinus (c, (FirstHalf, FirstHalf, FirstHalf)) Once) = (prev c, (SecondHalf, SecondHalf, SecondHalf)).
+Proof. Admitted.
+Axiom fileplus_firsteight :
+    forall c : Color,
+    forall a : SegmentHalf,
+    forall b : SegmentHalf,
+    (filePlus (c, (a, b, FirstHalf)) Once) = (c, (a, b, SecondHalf)).
+Axiom fileplus_firstquarter :
+    forall c : Color,
+    forall a : SegmentHalf,
+    (filePlus (c, (a, FirstHalf, SecondHalf)) Once) = (c, (a, SecondHalf, FirstHalf)).
+Axiom fileplus_firsthalf :
+    forall c : Color,
+    (filePlus (c, (FirstHalf, SecondHalf, SecondHalf)) Once) = (c, (SecondHalf, FirstHalf, FirstHalf)).
+Axiom fileplus_more_than_once :
+    forall f : File,
+    forall c : Count,
+    (filePlus f (OnceMore c)) = filePlus (filePlus f Once) c.
