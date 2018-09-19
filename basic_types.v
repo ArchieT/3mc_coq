@@ -83,3 +83,14 @@ Axiom fileplus_more_than_once :
     forall f : File,
     forall c : Count,
     (filePlus f (OnceMore c)) = filePlus (filePlus f Once) c.
+Inductive RankwiseDirection : Set := Inwards | Outwards.
+Inductive FilewiseDirection : Set := Pluswards | Minuswards.
+Definition DiagonalDirection : Set := RankwiseDirection * FilewiseDirection.
+Inductive Orientation : Set := RankwiseOrientation | FilewiseOrientation.
+Inductive StraightDirection : Type :=
+    | Rankwise (d:RankwiseDirection)
+    | Filewise (d:FilewiseDirection).
+Inductive LinearDirection : Set :=
+    | Straight (d:StraightDirection)
+    | Diagonal (d:DiagonalDirection).
+Definition LinearVec : Set := LinearDirection * Count.
